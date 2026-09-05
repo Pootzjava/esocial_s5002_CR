@@ -1,14 +1,13 @@
 ```
-# Python
-__pycache__/
+# Compiled Python files
 *.pyc
-*.pyo
-*.pyd
-*.py~
+__pycache__/
 
-# Database
+# Database file
 esocial_saas.db
 
-# Test cache
-.pytest_cache/
+# Environment files
+.env
+.env.local
+*.env.*
 ```

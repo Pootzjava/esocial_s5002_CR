@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 import time
 
-from src.api.routers import auth, xml_upload, pdf_generation, health, billing, employees
+from src.api.routers import auth, xml_upload, pdf_generation, health, billing, employees, audit_log, erp_integration
 from src.api.middleware.tenant_isolation import TenantIsolationMiddleware
 from src.infrastructure.database import init_db
 
@@ -38,12 +38,14 @@ app = FastAPI(
 - **Geração PDF**: Criação de comprovantes em lote
 - **Multi-Tenant**: Isolamento de dados entre empresas
 - **Billing**: Gestão de assinaturas com Stripe
+- **Audit Logs**: Rastreamento imutável de ações (Fase 3)
+- **ERP Integration**: Importação de Totvs, SAP, Oracle, Senior (Fase 3)
 - **Health Check**: Monitoramento da API
 
 ### Versão
-**Fase 2 - Multi-Tenant + Billing**
+**Fase 3 - Enterprise Ready**
     """,
-    version="2.0.0-multi-tenant",
+    version="3.0.0-enterprise",
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
@@ -79,6 +81,8 @@ app.include_router(pdf_generation.router, prefix="/api/v1/pdf", tags=["Geração
 app.include_router(health.router, prefix="/api/v1/health", tags=["Health"])
 app.include_router(billing.router, tags=["Billing"])  # Billing já tem prefix interno
 app.include_router(employees.router, tags=["Funcionários"])  # já tem prefix no router
+app.include_router(audit_log.router, prefix="/api/v1", tags=["Audit Logs"])
+app.include_router(erp_integration.router, prefix="/api/v1", tags=["ERP Integration"])
 
 
 @app.get("/", tags=["Root"])
@@ -86,8 +90,17 @@ async def root():
     """Endpoint raiz com informações da API"""
     return {
         "message": "eSocial Rendimentos SaaS API",
-        "version": "2.0.0-multi-tenant",
-        "phase": "Fase 2 - Multi-Tenant + UX",
+        "version": "3.0.0-enterprise",
+        "phase": "Fase 3 - Enterprise Ready",
+        "features": [
+            "Autenticação JWT",
+            "Upload XML eSocial",
+            "Geração PDF em Lote",
+            "Multi-Tenant Isolado",
+            "Billing Stripe",
+            "Audit Logs",
+            "Integração ERP (Totvs, SAP, Oracle, Senior)"
+        ],
         "docs": "/docs",
         "health": "/api/v1/health/status"
     }
