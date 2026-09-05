@@ -1,8 +1,8 @@
 """
 Configuração do Banco de Dados - SQLAlchemy
-Fase 1: MVP Core
+Fase 2: Multi-Tenant + Billing
 """
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
@@ -27,15 +27,29 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
+def create_tables():
+    """
+    Cria todas as tabelas no banco de dados
+    """
+    # Importar todos os modelos ORM para registrar no Base
+    from src.domain.models_orm import Tenant, User, Employee, IncomeEvent, PDFDocument, ProcessingJob, AuditLog
+    
+    # Criar tabelas
+    Base.metadata.create_all(bind=engine)
+
+
+def drop_tables():
+    """
+    Remove todas as tabelas do banco de dados (para testes)
+    """
+    Base.metadata.drop_all(bind=engine)
+
+
 async def init_db():
     """
     Inicializa o banco de dados criando as tabelas
     """
-    # Importar todos os modelos ORM para registrar no Base
-    from src.domain.models_orm import Tenant, User, Employee, IncomeEvent, PDFDocument, ProcessingJob
-    
-    # Criar tabelas
-    Base.metadata.create_all(bind=engine)
+    create_tables()
 
 
 def get_db():

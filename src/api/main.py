@@ -1,6 +1,6 @@
 """
 eSocial Rendimentos SaaS - API Principal
-MVP Core - Fase 1
+Fase 2: Multi-Tenant + Billing
 """
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +8,8 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 import time
 
-from src.api.routers import auth, xml_upload, pdf_generation, health
+from src.api.routers import auth, xml_upload, pdf_generation, health, billing
+from src.api.middleware.tenant_isolation import TenantIsolationMiddleware
 from src.infrastructure.database import init_db
 
 
@@ -35,17 +36,22 @@ app = FastAPI(
 - **Autenticação**: JWT tokens para segurança
 - **Upload XML**: Parse automático de XML eSocial S-5002
 - **Geração PDF**: Criação de comprovantes em lote
+- **Multi-Tenant**: Isolamento de dados entre empresas
+- **Billing**: Gestão de assinaturas com Stripe
 - **Health Check**: Monitoramento da API
 
 ### Versão
-**MVP Core - Fase 1**
+**Fase 2 - Multi-Tenant + Billing**
     """,
-    version="1.0.0-mvp",
+    version="2.0.0-multi-tenant",
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
     lifespan=lifespan
 )
+
+# Middleware de Isolamento Multi-Tenant (deve ser o primeiro após CORS)
+app.add_middleware(TenantIsolationMiddleware)
 
 # Middleware CORS
 app.add_middleware(
@@ -71,6 +77,7 @@ app.include_router(auth.router, prefix="/api/v1/auth", tags=["Autenticação"])
 app.include_router(xml_upload.router, prefix="/api/v1/xml", tags=["Upload XML"])
 app.include_router(pdf_generation.router, prefix="/api/v1/pdf", tags=["Geração PDF"])
 app.include_router(health.router, prefix="/api/v1/health", tags=["Health"])
+app.include_router(billing.router, prefix="/api/v1/billing", tags=["Billing"])
 
 
 @app.get("/", tags=["Root"])
@@ -78,8 +85,8 @@ async def root():
     """Endpoint raiz com informações da API"""
     return {
         "message": "eSocial Rendimentos SaaS API",
-        "version": "1.0.0-mvp",
-        "phase": "Fase 1 - MVP Core",
+        "version": "2.0.0-multi-tenant",
+        "phase": "Fase 2 - Multi-Tenant + Billing",
         "docs": "/docs",
         "health": "/api/v1/health/status"
     }
