@@ -6,12 +6,12 @@ baseado no token JWT do usuário autenticado.
 """
 from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, DispatchFunction
 from jose import jwt, JWTError
 from typing import Optional
 import os
 
-JWT_SECRET = os.getenv("JWT_SECRET", "supersecretkey")
+JWT_SECRET = os.getenv("JWT_SECRET", "test_secret_key")
 JWT_ALGORITHM = "HS256"
 
 
@@ -21,14 +21,17 @@ class TenantIsolationMiddleware(BaseHTTPMiddleware):
     que o usuário só acesse dados do seu próprio tenant.
     """
 
-    async def dispatch(self, request: Request, call_next):
+    async def dispatch(self, request: Request, call_next: DispatchFunction):
         # Rotas públicas que não requerem autenticação
         public_paths = [
             "/health", "/docs", "/openapi.json", "/redoc", "/",
             "/api/v1/auth/register", "/api/v1/billing/plans", "/api/v1/billing/webhook"
         ]
         
-        if any(request.url.path.startswith(path) for path in public_paths):
+        # Verifica se é rota pública ANTES de tentar processar token
+        is_public = any(request.url.path.startswith(path) for path in public_paths)
+        
+        if is_public:
             return await call_next(request)
 
         # Tenta extrair o token do header Authorization

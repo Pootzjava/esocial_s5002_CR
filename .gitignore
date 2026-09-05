@@ -4,39 +4,35 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
-python/
-venv/
-env/
-ENV/
-.venv/
-.env/
-.env.local
-.env.
-*.env.*
-.envrc
 
-# Testing
-.pytest_cache/
+# Database
+*.db
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Dependencies
+.venv/
+venv/
+node_modules/
+
+# Coverage
 .coverage
 coverage/
 htmlcov/
 
-# Database
-*.db
-*.db-journal
-
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-*.temp
-*~
-.swp
-.swo
-
-# OS
-.DS_Store
-Thumbs.db
+# Build artifacts
+dist/
+build/
+target/
 ```

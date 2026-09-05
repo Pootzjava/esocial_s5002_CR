@@ -42,7 +42,14 @@ async def list_employees(
     Lista todos os funcionários do tenant autenticado.
     Requer autenticação e role mínimo: viewer.
     """
-    tenant_id = request.state.tenant_id
+    # Middleware deve ter injetado tenant_id no request.state
+    tenant_id = getattr(request.state, 'tenant_id', None)
+    
+    if not tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuário não autenticado ou tenant_id não encontrado"
+        )
     
     employees = db.query(Employee).filter(
         Employee.tenant_id == tenant_id
