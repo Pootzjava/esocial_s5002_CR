@@ -11,7 +11,7 @@ from jose import jwt, JWTError
 from typing import Optional
 import os
 
-JWT_SECRET = os.getenv("JWT_SECRET", "test_secret_key")
+JWT_SECRET = os.getenv("JWT_SECRET_KEY", "dev-secret-key-change-in-production")
 JWT_ALGORITHM = "HS256"
 
 

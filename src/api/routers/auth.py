@@ -42,7 +42,7 @@ class UserCreate(BaseModel):
     username: str
     email: str
     password: str
-    tenant_id: str
+    tenant_id: int  # Alterado para int
 
 
 class UserResponse(BaseModel):
@@ -50,7 +50,7 @@ class UserResponse(BaseModel):
     id: int
     username: str
     email: str
-    tenant_id: int  # Alterado para int para corresponder ao middleware
+    tenant_id: int  # Mantido como int
     is_active: bool
 
 

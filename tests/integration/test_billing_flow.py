@@ -48,7 +48,8 @@ def create_admin_token(tenant_id: int) -> str:
         "role": "admin",
         "exp": expire
     }
-    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    # Usa a mesma chave secreta do ambiente de produção (middleware)
+    return jwt.encode(payload, "dev-secret-key-change-in-production", algorithm=JWT_ALGORITHM)
 
 
 def setup_tenant_with_subscription(db: Session):

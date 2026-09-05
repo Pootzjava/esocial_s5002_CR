@@ -25,16 +25,17 @@ coverage.xml
 *.db
 *.db-journal
 
-# Environment
-.env
-.env.local
-*.env.*
-
-# Editors
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*.tmp
+
+# Environment
+.env
+.env.local
+*.env.*
 
 # OS
 .DS_Store
