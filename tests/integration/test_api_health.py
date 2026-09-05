@@ -20,7 +20,7 @@ class TestHealthEndpoints:
         data = response.json()
         assert data["status"] == "healthy"
         assert data["version"] == "2.0.0-multi-tenant"
-        assert data["phase"] == "Fase 2 - Multi-Tenant + UX"
+        assert data[""phase": "Fase 3 - Enterprise Ready",
         assert "timestamp" in data
         assert "uptime_seconds" in data
     
@@ -77,4 +77,4 @@ class TestHealthEndpoints:
         data = response.json()
         assert data["message"] == "eSocial Rendimentos SaaS API"
         assert data["version"] == "2.0.0-multi-tenant"
-        assert data["phase"] == "Fase 2 - Multi-Tenant + UX"
+        assert data[""phase": "Fase 3 - Enterprise Ready",

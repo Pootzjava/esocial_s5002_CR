@@ -25,9 +25,10 @@ class TenantIsolationMiddleware(BaseHTTPMiddleware):
         # Rotas públicas que não requerem autenticação
         # Usamos paths exatos ou prefixos específicos terminados em /
         public_paths = [
-            "/health", "/docs", "/openapi.json", "/redoc", "/",
+            "/health", "/api/v1/health", "/api/v1/health/status", "/api/v1/health/detailed", "/api/v1/health/ready", "/api/v1/health/live", "/docs", "/openapi.json", "/redoc", "/",
             "/api/v1/auth/register", 
             "/api/v1/billing/plans", 
+            "/api/v1/auth/login",
             "/api/v1/billing/webhook"
         ]
         
