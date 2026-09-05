@@ -50,10 +50,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Middleware de Isolamento Multi-Tenant (deve ser o primeiro após CORS)
-app.add_middleware(TenantIsolationMiddleware)
-
-# Middleware CORS
+# Middleware CORS (deve ser o primeiro)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Em produção, especificar domínios permitidos
@@ -61,6 +58,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Middleware de Isolamento Multi-Tenant (depois do CORS)
+app.add_middleware(TenantIsolationMiddleware)
 
 # Middleware de logging
 @app.middleware("http")

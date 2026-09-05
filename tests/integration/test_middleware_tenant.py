@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 
 from src.api.main import app
 from src.infrastructure.database import get_db, engine, Base
-from src.domain.models_orm import Tenant, User, Employee, UserRole
+from src.domain.models_orm import Tenant, User, Employee, UserRole, PlanTier, SubscriptionStatus
 from src.infrastructure.database import create_tables
 
 # Configuração do JWT para testes
@@ -60,7 +60,8 @@ def setup_tenants(db: Session):
         name="Empresa A LTDA",
         cnpj="11.111.111/0001-11",
         email="contato@empresa-a.com.br",
-        plan_tier=UserRole.admin
+        plan_tier=PlanTier.professional,
+        subscription_status=SubscriptionStatus.active
     )
     db.add(tenant_a)
     db.flush()
@@ -70,7 +71,8 @@ def setup_tenants(db: Session):
         name="Empresa B S.A.",
         cnpj="22.222.222/0001-22",
         email="contato@empresa-b.com.br",
-        plan_tier=UserRole.admin
+        plan_tier=PlanTier.professional,
+        subscription_status=SubscriptionStatus.active
     )
     db.add(tenant_b)
     db.flush()
