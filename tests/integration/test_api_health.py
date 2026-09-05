@@ -19,8 +19,8 @@ class TestHealthEndpoints:
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "healthy"
-        assert data["version"] == "1.0.0-mvp"
-        assert data["phase"] == "Fase 1 - MVP Core"
+        assert data["version"] == "2.0.0-multi-tenant"
+        assert data["phase"] == "Fase 2 - Multi-Tenant + UX"
         assert "timestamp" in data
         assert "uptime_seconds" in data
     
@@ -76,5 +76,5 @@ class TestHealthEndpoints:
         assert response.status_code == 200
         data = response.json()
         assert data["message"] == "eSocial Rendimentos SaaS API"
-        assert data["version"] == "1.0.0-mvp"
-        assert data["phase"] == "Fase 1 - MVP Core"
+        assert data["version"] == "2.0.0-multi-tenant"
+        assert data["phase"] == "Fase 2 - Multi-Tenant + UX"

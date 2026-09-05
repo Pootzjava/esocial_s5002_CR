@@ -68,7 +68,13 @@ async def get_employee(
     Obtém detalhes de um funcionário específico.
     Requer autenticação e role mínimo: viewer.
     """
-    tenant_id = request.state.tenant_id
+    tenant_id = getattr(request.state, 'tenant_id', None)
+    
+    if not tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuário não autenticado ou tenant_id não encontrado"
+        )
     
     employee = db.query(Employee).filter(
         Employee.id == employee_id,
@@ -94,15 +100,22 @@ async def create_employee(
     Cria um novo funcionário no tenant autenticado.
     Requer role: manager ou admin.
     """
+    # Verificar autenticação primeiro
+    tenant_id = getattr(request.state, 'tenant_id', None)
+    user_role = getattr(request.state, 'user_role', None)
+    
+    if not tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuário não autenticado ou tenant_id não encontrado"
+        )
+    
     # Verificar permissão
-    user_role = request.state.user_role
     if user_role not in [Role.ADMIN, Role.MANAGER, Role.HR_OPERATOR]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Permissão negada. Apenas managers, hr_operators ou admins podem criar funcionários."
         )
-    
-    tenant_id = request.state.tenant_id
     
     # Validar se CPF já existe neste tenant
     existing = db.query(Employee).filter(
@@ -141,14 +154,20 @@ async def update_employee(
     Atualiza dados de um funcionário.
     Requer role: manager ou admin.
     """
-    user_role = request.state.user_role
+    tenant_id = getattr(request.state, 'tenant_id', None)
+    user_role = getattr(request.state, 'user_role', None)
+    
+    if not tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuário não autenticado ou tenant_id não encontrado"
+        )
+    
     if user_role not in [Role.ADMIN, Role.MANAGER, Role.HR_OPERATOR]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Permissão negada."
         )
-    
-    tenant_id = request.state.tenant_id
     
     employee = db.query(Employee).filter(
         Employee.id == employee_id,
@@ -182,14 +201,20 @@ async def delete_employee(
     Remove um funcionário.
     Requer role: admin.
     """
-    user_role = request.state.user_role
+    tenant_id = getattr(request.state, 'tenant_id', None)
+    user_role = getattr(request.state, 'user_role', None)
+    
+    if not tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuário não autenticado ou tenant_id não encontrado"
+        )
+    
     if user_role != Role.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Apenas admins podem remover funcionários."
         )
-    
-    tenant_id = request.state.tenant_id
     
     employee = db.query(Employee).filter(
         Employee.id == employee_id,
