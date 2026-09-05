@@ -1,57 +1,41 @@
 ```
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.py~
+# Database file
+esocial_saas.db
 
-# Dependencies
-.venv/
-venv/
+# Environment variables
 .env
 .env.local
 *.env.*
 
-# Database
-*.db
-
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-*.swp
-*~
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-
-# Build artifacts
-dist/
-build/
-target/
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
 *.so
-*.dylib
-*.dll
-*.exe
-*.out
+*.egg-info/
+.eggs/
+.venv/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
 
 # Testing
 .coverage
+coverage/
 htmlcov/
-.coverage.*
-.nox/
-.tox/
+.nyc_output/
+.mypy_cache/
+.pytest_cache/
+.hypothesis/
 
-# Package management
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
 
 # OS generated files
 .DS_Store
@@ -61,4 +45,13 @@ yarn-error.log*
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Logs
+*.log
+
+# Build and distribution artifacts
+dist/
+build/
+*.egg
+*.whl
 ```
