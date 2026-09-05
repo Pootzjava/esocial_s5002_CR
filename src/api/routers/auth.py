@@ -34,7 +34,7 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     """Dados do token decodificado"""
     username: Optional[str] = None
-    tenant_id: Optional[str] = None
+    tenant_id: Optional[int] = None  # Alterado para int para corresponder ao middleware
 
 
 class UserCreate(BaseModel):
@@ -50,7 +50,7 @@ class UserResponse(BaseModel):
     id: int
     username: str
     email: str
-    tenant_id: str
+    tenant_id: int  # Alterado para int para corresponder ao middleware
     is_active: bool
 
 
@@ -146,12 +146,13 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Criar token
+    # Criar token com tenant_id numérico (mock) e role admin por padrão
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={
             "sub": form_data.username,
-            "tenant_id": "tenant-mock"
+            "tenant_id": 1,  # Mock numérico para testes
+            "role": "admin"  # Adiciona role ao token
         },
         expires_delta=access_token_expires
     )

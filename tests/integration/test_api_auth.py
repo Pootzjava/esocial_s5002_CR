@@ -27,7 +27,7 @@ class TestAuthEndpoints:
         data = response.json()
         assert data["username"] == "testuser"
         assert data["email"] == "test@example.com"
-        assert data["tenant_id"] == "tenant-001"
+        assert data["tenant_id"] == 1  # Alterado para int
         assert data["is_active"] is True
     
     def test_register_user_short_password(self):
@@ -36,7 +36,7 @@ class TestAuthEndpoints:
             "username": "testuser2",
             "email": "test2@example.com",
             "password": "short",
-            "tenant_id": "tenant-001"
+            "tenant_id": 1  # Alterado para int
         }
         
         response = client.post("/api/v1/auth/register", json=payload)

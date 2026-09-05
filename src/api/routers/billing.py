@@ -79,16 +79,24 @@ class WebhookEvent(BaseModel):
     data: dict
 
 
-@router.post("/checkout", response_model=CheckoutSessionResponse)
-@require_role("admin")
+@router.post("/checkout", response_model=CheckoutSessionResponse, dependencies=[Depends(check_admin_role)])
 async def create_checkout_session(
+    request: Request,
     request_data: CheckoutSessionRequest,
-    db: Session = Depends(get_db),
-    tenant_id: str = None  # Injetado pelo middleware
+    db: Session = Depends(get_db)
 ):
     """
     Cria uma sessão de checkout do Stripe para upgrade de plano.
+    Requer papel admin.
     """
+    # Extrai tenant_id do request state (injetado pelo middleware)
+    tenant_id = getattr(request.state, 'tenant_id', None)
+    if not tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Tenant ID não encontrado"
+        )
+    
     if request_data.plan_tier not in PLANS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -177,15 +185,23 @@ async def stripe_webhook(
     return {"status": "ignored", "message": "Evento não processado"}
 
 
-@router.get("/subscription")
-@require_role("admin")
+@router.get("/subscription", dependencies=[Depends(check_admin_role)])
 async def get_subscription_info(
-    db: Session = Depends(get_db),
-    tenant_id: str = None
+    request: Request,
+    db: Session = Depends(get_db)
 ):
     """
     Retorna informações da assinatura atual do tenant.
+    Requer papel admin.
     """
+    # Extrai tenant_id do request state (injetado pelo middleware)
+    tenant_id = getattr(request.state, 'tenant_id', None)
+    if not tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Tenant ID não encontrado"
+        )
+    
     tenant = db.query(Tenant).filter(Tenant.id == tenant_id).first()
     if not tenant:
         raise HTTPException(status_code=404, detail="Tenant não encontrado")
