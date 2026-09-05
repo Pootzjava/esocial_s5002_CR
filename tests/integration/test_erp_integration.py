@@ -66,7 +66,8 @@ def test_user(db_session, test_tenant):
 @pytest.fixture(scope="function")
 def auth_token(test_user):
     """Realiza login e retorna token JWT."""
-    response = client.post("/api/v1/auth/login", json={
+    # OAuth2PasswordRequestForm espera form-data, não JSON
+    response = client.post("/api/v1/auth/login", data={
         "username": test_user.username,
         "password": "password123"
     })

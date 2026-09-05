@@ -69,7 +69,8 @@ def test_user(db_session, test_tenant):
 @pytest.fixture(scope="function")
 def auth_token(test_user):
     """Realiza login e retorna token JWT."""
-    response = client.post("/api/v1/auth/login", json={
+    # OAuth2PasswordRequestForm espera form-data, não JSON
+    response = client.post("/api/v1/auth/login", data={
         "username": test_user.username,
         "password": "password123"
     })
@@ -88,7 +89,7 @@ def sample_audit_logs(db_session, test_tenant, test_user):
             action="VIEW" if i % 2 == 0 else "CREATE",
             resource_type="Employee" if i % 2 == 0 else "PDFDocument",
             resource_id=100 + i,
-            details={"extra_info": f"log_{i}"},
+            new_value={"extra_info": f"log_{i}"},
             ip_address=f"192.168.1.{i}",
             user_agent="TestAgent/1.0",
         )

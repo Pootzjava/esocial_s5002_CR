@@ -52,8 +52,8 @@ async def health_status():
     
     return HealthStatus(
         status="healthy",
-        version="2.0.0-multi-tenant",
-        phase="Fase 2 - Multi-Tenant + UX",
+        version="3.0.0-enterprise",
+        phase="Fase 3 - Enterprise Ready",
         timestamp=datetime.utcnow(),
         uptime_seconds=uptime
     )
@@ -79,8 +79,8 @@ async def detailed_health(
     return SystemHealth(
         api=HealthStatus(
             status="healthy",
-            version="2.0.0-multi-tenant",
-            phase="Fase 2 - Multi-Tenant + UX",
+            version="3.0.0-enterprise",
+            phase="Fase 3 - Enterprise Ready",
             timestamp=datetime.utcnow(),
             uptime_seconds=(datetime.utcnow() - START_TIME).total_seconds()
         ),
