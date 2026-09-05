@@ -101,49 +101,53 @@ def setup_tenants(db: Session):
 class TestTenantIsolation:
     """Testes de isolamento multi-tenant"""
     
-    def test_user_from_tenant_a_cannot_access_employee_from_tenant_b(self, client, monkeypatch):
+    def test_user_from_tenant_a_cannot_access_employee_from_tenant_b(self, client):
         """Usuário do Tenant A não deve conseguir acessar funcionário do Tenant B"""
-        db = next(override_get_db_for_test())
+        db = Session(bind=engine)
         
-        # Setup
-        tenant_a, tenant_b, employee_a, employee_b = setup_tenants(db)
-        
-        # Cria token para usuário do Tenant A
-        token = create_token(tenant_id=tenant_a.id, user_id=999, role="viewer")
-        
-        headers = {"Authorization": f"Bearer {token}"}
-        
-        # Tenta acessar funcionário do Tenant B (deve falhar)
-        # Nota: Em uma implementação real, o endpoint filtraria por tenant_id automaticamente
-        # Aqui simulamos que o middleware injeta tenant_id na request
-        response = client.get(f"/api/v1/employees/{employee_b.id}", headers=headers)
-        
-        # Deve retornar 403 ou 404 pois o funcionário não pertence ao tenant do usuário
-        assert response.status_code in [403, 404]
-        
-        db.close()
+        try:
+            # Setup
+            tenant_a, tenant_b, employee_a, employee_b = setup_tenants(db)
+            
+            # Cria token para usuário do Tenant A
+            token = create_token(tenant_id=tenant_a.id, user_id=999, role="viewer")
+            
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Tenta acessar funcionário do Tenant B (deve falhar)
+            # Nota: Em uma implementação real, o endpoint filtraria por tenant_id automaticamente
+            # Aqui simulamos que o middleware injeta tenant_id na request
+            response = client.get(f"/api/v1/employees/{employee_b.id}", headers=headers)
+            
+            # Deve retornar 403 ou 404 pois o funcionário não pertence ao tenant do usuário
+            assert response.status_code in [403, 404]
+            
+        finally:
+            db.close()
     
-    def test_user_from_tenant_a_can_access_employee_from_tenant_a(self, client, monkeypatch):
+    def test_user_from_tenant_a_can_access_employee_from_tenant_a(self, client):
         """Usuário do Tenant A deve conseguir acessar funcionário do próprio Tenant A"""
-        db = next(override_get_db_for_test())
+        db = Session(bind=engine)
         
-        # Setup
-        tenant_a, tenant_b, employee_a, employee_b = setup_tenants(db)
-        
-        # Cria token para usuário do Tenant A
-        token = create_token(tenant_id=tenant_a.id, user_id=999, role="manager")
-        
-        headers = {"Authorization": f"Bearer {token}"}
-        
-        # Acessa funcionário do próprio tenant (deve funcionar)
-        response = client.get(f"/api/v1/employees/{employee_a.id}", headers=headers)
-        
-        # Como o funcionário existe mas pode não haver endpoint específico, 
-        # validamos que o middleware permitiu a requisição passar
-        # O status 404 aqui significaria que o endpoint não existe, não erro de permissão
-        assert response.status_code != 403
-        
-        db.close()
+        try:
+            # Setup
+            tenant_a, tenant_b, employee_a, employee_b = setup_tenants(db)
+            
+            # Cria token para usuário do Tenant A
+            token = create_token(tenant_id=tenant_a.id, user_id=999, role="manager")
+            
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Acessa funcionário do próprio tenant (deve funcionar)
+            response = client.get(f"/api/v1/employees/{employee_a.id}", headers=headers)
+            
+            # Como o funcionário existe mas pode não haver endpoint específico, 
+            # validamos que o middleware permitiu a requisição passar
+            # O status 404 aqui significaria que o endpoint não existe, não erro de permissão
+            assert response.status_code != 403
+            
+        finally:
+            db.close()
     
     def test_middleware_extracts_tenant_id_from_token(self, client):
         """Middleware deve extrair corretamente o tenant_id do token JWT"""
@@ -210,22 +214,24 @@ class TestTenantIsolation:
         response = client.get("/openapi.json")
         assert response.status_code == 200
     
-    def test_tenant_id_injected_in_request_state(self, client, monkeypatch):
+    def test_tenant_id_injected_in_request_state(self, client):
         """Middleware deve injetar tenant_id no request.state"""
         # Este teste valida a lógica interna do middleware
-        db = next(override_get_db_for_test())
+        db = Session(bind=engine)
         
-        tenant_a, tenant_b, _, _ = setup_tenants(db)
-        
-        token = create_token(tenant_id=tenant_a.id, user_id=999, role="admin")
-        headers = {"Authorization": f"Bearer {token}"}
-        
-        # Faz request - o middleware deve injetar tenant_id
-        response = client.get("/api/v1/health/detailed", headers=headers)
-        
-        assert response.status_code == 200
-        
-        db.close()
+        try:
+            tenant_a, tenant_b, _, _ = setup_tenants(db)
+            
+            token = create_token(tenant_id=tenant_a.id, user_id=999, role="admin")
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Faz request - o middleware deve injetar tenant_id
+            response = client.get("/api/v1/health/detailed", headers=headers)
+            
+            assert response.status_code == 200
+            
+        finally:
+            db.close()
 
 
 # Helper para obter db session nos testes

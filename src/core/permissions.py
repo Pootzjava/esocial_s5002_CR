@@ -8,18 +8,27 @@ from functools import wraps
 from fastapi import HTTPException, status, Request
 from typing import List, Callable
 
+# Classe de Roles para uso em type hints e validações
+class Role:
+    ADMIN = "admin"
+    MANAGER = "manager"
+    VIEWER = "viewer"
+    HR_OPERATOR = "hr_operator"
+
 # Definição de Papéis e Permissões
 ROLES = {
-    "admin": ["read", "write", "delete", "manage_users", "billing"],
-    "manager": ["read", "write", "upload_xml", "generate_pdf"],
-    "viewer": ["read"]
+    Role.ADMIN: ["read", "write", "delete", "manage_users", "billing"],
+    Role.MANAGER: ["read", "write", "upload_xml", "generate_pdf"],
+    Role.HR_OPERATOR: ["read", "write", "upload_xml", "generate_pdf"],
+    Role.VIEWER: ["read"]
 }
 
 # Hierarquia de papéis (quem pode fazer o quê)
 ROLE_HIERARCHY = {
-    "admin": 3,
-    "manager": 2,
-    "viewer": 1
+    Role.ADMIN: 3,
+    Role.MANAGER: 2,
+    Role.HR_OPERATOR: 2,
+    Role.VIEWER: 1
 }
 
 

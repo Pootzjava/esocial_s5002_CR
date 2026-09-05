@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 import time
 
-from src.api.routers import auth, xml_upload, pdf_generation, health, billing
+from src.api.routers import auth, xml_upload, pdf_generation, health, billing, employees
 from src.api.middleware.tenant_isolation import TenantIsolationMiddleware
 from src.infrastructure.database import init_db
 
@@ -78,6 +78,7 @@ app.include_router(xml_upload.router, prefix="/api/v1/xml", tags=["Upload XML"])
 app.include_router(pdf_generation.router, prefix="/api/v1/pdf", tags=["Geração PDF"])
 app.include_router(health.router, prefix="/api/v1/health", tags=["Health"])
 app.include_router(billing.router, prefix="/api/v1/billing", tags=["Billing"])
+app.include_router(employees.router, tags=["Funcionários"])  # já tem prefix no router
 
 
 @app.get("/", tags=["Root"])
