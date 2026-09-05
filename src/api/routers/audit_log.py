@@ -25,14 +25,12 @@ def get_audit_logs(
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_current_tenant_id),
     current_user_id: int = Depends(get_current_user_id),
+    user_role: str = Depends(require_role(["admin", "auditor"])),
 ):
     """
     Recupera logs de auditoria do tenant com filtros opcionais.
     Requer papel de Admin ou Auditor.
     """
-    # Verificar permissão (apenas Admin ou Auditor podem ver logs)
-    require_role(["admin", "auditor"])(lambda: None)()
-    
     logs = AuditLogService.get_logs_by_tenant(
         db=db,
         tenant_id=tenant_id,
@@ -72,14 +70,12 @@ def export_audit_logs(
     db: Session = Depends(get_db),
     tenant_id: int = Depends(get_current_tenant_id),
     current_user_id: int = Depends(get_current_user_id),
+    user_role: str = Depends(require_role(["admin"])),
 ):
     """
     Exporta logs de auditoria em formato CSV.
     Requer papel de Admin.
     """
-    # Verificar permissão (apenas Admin pode exportar logs)
-    require_role(["admin"])(lambda: None)()
-    
     csv_content = AuditLogService.export_logs_to_csv(
         db=db,
         tenant_id=tenant_id,

@@ -4,14 +4,17 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.py~
 
-# Database
-esocial_saas.db
-
-# Environment
+# Dependencies
+.venv/
+venv/
 .env
 .env.local
 *.env.*
+
+# Database
+*.db
 
 # Logs
 *.log
@@ -20,4 +23,42 @@ esocial_saas.db
 *.tmp
 *.swp
 *~
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Build artifacts
+dist/
+build/
+target/
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+
+# Testing
+.coverage
+htmlcov/
+.coverage.*
+.nox/
+.tox/
+
+# Package management
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 ```

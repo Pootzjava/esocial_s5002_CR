@@ -89,7 +89,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
     
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
+        # Tenta obter username do campo 'username' primeiro, senão usa 'sub'
+        username: str = payload.get("username") or payload.get("sub")
         tenant_id: str = payload.get("tenant_id")
         
         if username is None:
@@ -157,6 +158,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     access_token = create_access_token(
         data={
             "sub": str(mock_user_id),  # User ID como string (padrão JWT)
+            "username": form_data.username,  # Adiciona username explicitamente
             "tenant_id": 1,  # Mock numérico para testes
             "role": "admin"  # Adiciona role ao token
         },
