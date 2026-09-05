@@ -23,13 +23,27 @@ class TenantIsolationMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next: DispatchFunction):
         # Rotas públicas que não requerem autenticação
+        # Usamos paths exatos ou prefixos específicos terminados em /
         public_paths = [
             "/health", "/docs", "/openapi.json", "/redoc", "/",
-            "/api/v1/auth/register", "/api/v1/billing/plans", "/api/v1/billing/webhook"
+            "/api/v1/auth/register", 
+            "/api/v1/billing/plans", 
+            "/api/v1/billing/webhook"
         ]
         
-        # Verifica se é rota pública ANTES de tentar processar token
-        is_public = any(request.url.path.startswith(path) for path in public_paths)
+        # Verifica se é rota pública - matching exato ou prefixo com /
+        is_public = False
+        request_path = request.url.path
+        
+        for public_path in public_paths:
+            # Match exato
+            if request_path == public_path:
+                is_public = True
+                break
+            # Match de prefixo (para sub-paths)
+            if request_path.startswith(public_path + "/"):
+                is_public = True
+                break
         
         if is_public:
             return await call_next(request)
@@ -67,5 +81,6 @@ class TenantIsolationMiddleware(BaseHTTPMiddleware):
                 content={"detail": "Token inválido ou expirado"}
             )
 
+        # Chama o próximo middleware/endpoint
         response = await call_next(request)
         return response

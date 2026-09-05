@@ -48,7 +48,7 @@ def create_admin_token(tenant_id: int) -> str:
         "role": "admin",
         "exp": expire
     }
-    # Usa a mesma chave secreta do ambiente de produção (middleware)
+    # Usa a mesma chave secreta do middleware
     return jwt.encode(payload, "dev-secret-key-change-in-production", algorithm=JWT_ALGORITHM)
 
 
@@ -236,7 +236,7 @@ class TestBillingFlow:
         
         tenant = setup_tenant_with_subscription(db)
         
-        # Cria token com role viewer (não admin)
+        # Cria token com role viewer (não admin) - USA A MESMA CHAVE DO MIDDLEWARE
         expire = datetime.utcnow() + timedelta(hours=1)
         payload = {
             "sub": "2",
@@ -244,7 +244,7 @@ class TestBillingFlow:
             "role": "viewer",
             "exp": expire
         }
-        token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+        token = jwt.encode(payload, "dev-secret-key-change-in-production", algorithm=JWT_ALGORITHM)
         
         headers = {"Authorization": f"Bearer {token}"}
         
