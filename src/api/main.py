@@ -77,7 +77,7 @@ app.include_router(auth.router, prefix="/api/v1/auth", tags=["Autenticação"])
 app.include_router(xml_upload.router, prefix="/api/v1/xml", tags=["Upload XML"])
 app.include_router(pdf_generation.router, prefix="/api/v1/pdf", tags=["Geração PDF"])
 app.include_router(health.router, prefix="/api/v1/health", tags=["Health"])
-app.include_router(billing.router, prefix="/api/v1/billing", tags=["Billing"])
+app.include_router(billing.router, tags=["Billing"])  # Billing já tem prefix interno
 app.include_router(employees.router, tags=["Funcionários"])  # já tem prefix no router
 
 
@@ -87,7 +87,7 @@ async def root():
     return {
         "message": "eSocial Rendimentos SaaS API",
         "version": "2.0.0-multi-tenant",
-        "phase": "Fase 2 - Multi-Tenant + Billing",
+        "phase": "Fase 2 - Multi-Tenant + UX",
         "docs": "/docs",
         "health": "/api/v1/health/status"
     }

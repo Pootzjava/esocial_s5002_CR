@@ -12,7 +12,39 @@ import os
 from sqlalchemy.orm import Session
 from src.infrastructure.database import get_db
 from src.domain.models_orm import Tenant
-from src.core.permissions import require_role
+from src.core.permissions import require_role, Role
+
+
+async def get_tenant_id_from_request(request: Request) -> int:
+    """Extrai tenant_id do request state (injetado pelo middleware)"""
+    tenant_id = getattr(request.state, 'tenant_id', None)
+    if not tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Tenant ID não encontrado. Usuário não autenticado."
+        )
+    return tenant_id
+
+
+async def get_user_role_from_request(request: Request) -> str:
+    """Extrai user_role do request state (injetado pelo middleware)"""
+    role = getattr(request.state, 'user_role', None)
+    if not role:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User role não encontrado. Usuário não autenticado."
+        )
+    return role
+
+
+def check_admin_role(role: str = Depends(get_user_role_from_request)):
+    """Verifica se usuário é admin"""
+    if role != Role.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Acesso negado. Papel mínimo requerido: admin. Seu papel: {role}"
+        )
+    return role
 
 router = APIRouter(prefix="/api/v1/billing", tags=["Billing"])
 
