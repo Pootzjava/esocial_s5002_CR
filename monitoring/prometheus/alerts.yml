@@ -1,0 +1,106 @@
+groups:
+- name: esocial_rendimentos_alerts
+  rules:
+  # API Availability Alerts
+  - alert: APIHighErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High API error rate detected"
+      description: "Error rate is {{ $value }}% for the last 5 minutes"
+
+  - alert: APISlowResponse
+    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "API response time is slow"
+      description: "95th percentile response time is {{ $value }}s"
+
+  # Database Alerts
+  - alert: PostgreSQLDown
+    expr: pg_up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "PostgreSQL database is down"
+      description: "PostgreSQL instance {{ $labels.instance }} is not reachable"
+
+  - alert: PostgreSQLHighConnections
+    expr: pg_stat_activity_count > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "PostgreSQL high connection count"
+      description: "Connection count is {{ $value }}"
+
+  # Redis Alerts
+  - alert: RedisDown
+    expr: redis_up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Redis is down"
+      description: "Redis instance {{ $labels.instance }} is not reachable"
+
+  - alert: RedisHighMemory
+    expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Redis memory usage is high"
+      description: "Memory usage is {{ $value | humanizePercentage }}"
+
+  # Pod/Container Alerts
+  - alert: PodCrashLooping
+    expr: rate(kube_pod_container_status_restarts_total[15m]) > 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Pod is crash looping"
+      description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is restarting frequently"
+
+  - alert: HighCPUUsage
+    expr: sum(rate(container_cpu_usage_seconds_total[5m])) by (pod) / sum(kube_pod_container_resource_limits{resource=\"cpu\"}) by (pod) > 0.9
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage detected"
+      description: "Pod {{ $labels.pod }} CPU usage is above 90%"
+
+  - alert: HighMemoryUsage
+    expr: sum(container_memory_working_set_bytes) by (pod) / sum(kube_pod_container_resource_limits{resource=\"memory\"}) by (pod) > 0.9
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage detected"
+      description: "Pod {{ $labels.pod }} memory usage is above 90%"
+
+  # Business Metrics Alerts
+  - alert: HighXMLProcessingFailures
+    expr: rate(xml_processing_failures_total[5m]) > 0.1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High XML processing failure rate"
+      description: "XML processing failures are {{ $value }} per second"
+
+  - alert: HighPDFFgenerationFailures
+    expr: rate(pdf_generation_failures_total[5m]) > 0.1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High PDF generation failure rate"
+      description: "PDF generation failures are {{ $value }} per second"
