@@ -54,7 +54,8 @@ def get_audit_logs(
                 "action": log.action,
                 "resource_type": log.resource_type,
                 "resource_id": log.resource_id,
-                "details": log.details,
+                "old_value": log.old_value,
+                "new_value": log.new_value,
                 "ip_address": log.ip_address,
                 "created_at": log.created_at.isoformat(),
             }

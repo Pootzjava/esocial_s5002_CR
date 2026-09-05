@@ -48,9 +48,10 @@ def get_current_user_id(
             )
         
         # Buscar primeiro usuário admin do tenant (para MVP)
+        # Nota: role pode ser string ou UserRole enum
         user = db.query(User).filter(
             User.tenant_id == tenant_id,
-            User.role == UserRole.admin
+            (User.role == UserRole.admin) | (User.role == "admin")
         ).first()
         
         if not user:
@@ -115,7 +116,7 @@ def get_current_user_role(
     user_id: int = Depends(get_current_user_id),
 ) -> str:
     """
-    Retorna o papel (role) do usuário atual.
+    Retorna o papel (role) do usuário atual como string.
     """
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -124,7 +125,9 @@ def get_current_user_role(
             detail="User not found",
         )
     
-    return user.role
+    # Converter enum para string se necessário
+    role_value = user.role.value if hasattr(user.role, 'value') else str(user.role)
+    return role_value
 
 
 def require_role(allowed_roles: list[str]):

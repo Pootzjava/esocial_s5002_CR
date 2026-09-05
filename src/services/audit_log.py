@@ -153,9 +153,10 @@ class AuditLogService:
                 'action': log.action,
                 'resource_type': log.resource_type,
                 'resource_id': log.resource_id,
-                'details': str(log.details),
-                'ip_address': log.ip_address,
-                'user_agent': log.user_agent,
+                'old_value': str(log.old_value) if log.old_value else '',
+                'new_value': str(log.new_value) if log.new_value else '',
+                'ip_address': log.ip_address or '',
+                'user_agent': log.user_agent or '',
                 'created_at': log.created_at.isoformat(),
             })
         
