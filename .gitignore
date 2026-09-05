@@ -5,27 +5,19 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Dependencies
-.venv/
-venv/
-env/
+# Database
+esocial_saas.db
+
+# Environment
 .env
 .env.local
-.env.*
-
-# Testing
-.pytest_cache/
-.coverage
-coverage/
-
-# Database
-*.db
-*.db-journal
+*.env.*
 
 # Logs
 *.log
 
 # Temporary files
 *.tmp
-*.temp
+*.swp
+*~
 ```

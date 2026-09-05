@@ -11,8 +11,11 @@ from jose import jwt, JWTError
 from typing import Optional
 import os
 
-JWT_SECRET = os.getenv("JWT_SECRET_KEY", "dev-secret-key-change-in-production")
-JWT_ALGORITHM = "HS256"
+# Configurações do JWT
+from src.config.settings import settings
+
+JWT_SECRET = settings.JWT_SECRET_KEY
+JWT_ALGORITHM = settings.JWT_ALGORITHM
 
 
 class TenantIsolationMiddleware(BaseHTTPMiddleware):

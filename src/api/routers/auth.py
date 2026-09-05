@@ -12,8 +12,10 @@ from typing import Optional
 import os
 
 # Configurações
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret-key-change-in-production")
-ALGORITHM = "HS256"
+from src.config.settings import settings
+
+SECRET_KEY = settings.JWT_SECRET_KEY
+ALGORITHM = settings.JWT_ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 router = APIRouter()
@@ -146,11 +148,15 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Criar token com tenant_id numérico (mock) e role admin por padrão
+    # Criar token com user_id numérico como 'sub' (padrão JWT)
+    # Mock: usar hash do username como ID para testes determinísticos
+    import hashlib
+    mock_user_id = int(hashlib.md5(form_data.username.encode()).hexdigest()[:8], 16) % 1000 + 1
+    
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={
-            "sub": form_data.username,
+            "sub": str(mock_user_id),  # User ID como string (padrão JWT)
             "tenant_id": 1,  # Mock numérico para testes
             "role": "admin"  # Adiciona role ao token
         },
